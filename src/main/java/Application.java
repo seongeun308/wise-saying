@@ -39,6 +39,20 @@ public class Application {
                 else
                     System.out.println(removeId + "번 명언이 삭제되었습니다.");
             }
+            if (command.startsWith("수정")) {
+                int updateId  = Integer.parseInt(command.substring(6));
+                WiseSaying oldWiseSaying = book.get(updateId);
+
+                System.out.println("명언(기존) : " + oldWiseSaying.getBody());
+                System.out.print("명언 : ");
+                String newBody = scanner.next();
+
+                System.out.println("작가(기존) : " + oldWiseSaying.getWriter());
+                System.out.print("작가 : ");
+                String newWriter = scanner.next();
+
+                book.replace(updateId, new WiseSaying(updateId, newWriter, newBody));
+            }
         }
     }
 }
