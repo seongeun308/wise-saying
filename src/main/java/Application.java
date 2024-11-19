@@ -1,14 +1,20 @@
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Application {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("== 명언 앱 ==");
         Scanner scanner = new Scanner(System.in);
 
-        Map<Integer, WiseSaying> book = new HashMap<>();
-        int id = 1;
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        int id = new Scanner(new File("src/main/resources/db/wiseSaying/lastId.txt")).nextInt();
+
         while (true) {
             System.out.print("명령) ");
             String command = scanner.next();
@@ -19,41 +25,57 @@ public class Application {
                 System.out.print("작가 : ");
                 String author = scanner.next();
 
-                book.put(id, new WiseSaying(id, body, writer));
-                book.put(id, new WiseSaying(id, content, author));
+                WiseSaying wiseSaying = new WiseSaying(id, content, author);
+                mapper.writeValue(new File("src/main/resources/db/wiseSaying/" + id + ".json"), wiseSaying);
+
                 System.out.println(id++ + "번 명언이 등록되었습니다.");
             }
             if (command.equals("목록")) {
                 System.out.println("번호 / 작가 / 명언");
                 System.out.println("----------------------");
-                book.values().forEach(wiseSaying ->
-                        System.out.println(wiseSaying.getId() + "/ "
-                                + wiseSaying.getAuthor() + " / "
-                                + wiseSaying.getContent())
-                );
+                File directory = new File("src/main/resources/db/wiseSaying");
+                File[] files = directory.listFiles((dir, name) -> name.endsWith(".json"));
+
+                for (File file : files) {
+                    WiseSaying wiseSaying = mapper.readValue(file, WiseSaying.class);
+                    System.out.println(wiseSaying.getId() + "/ "
+                            + wiseSaying.getAuthor() + " / "
+                            + wiseSaying.getContent());
+                }
             }
             if (command.startsWith("삭제")) {
                 int removeId  = Integer.parseInt(command.substring(6));
-                WiseSaying removed = book.remove(removeId);
-                if (removed == null)
-                    System.out.println(removeId + "번 명언은 존재하지 않습니다.");
-                else
+                File file = new File("src/main/resources/db/wiseSaying/" + removeId + ".json");
+                if (file.delete()) {
                     System.out.println(removeId + "번 명언이 삭제되었습니다.");
+                }
+                else {
+                    System.out.println(removeId + "번 명언은 존재하지 않습니다.");
+                }
             }
             if (command.startsWith("수정")) {
                 int updateId  = Integer.parseInt(command.substring(6));
-                WiseSaying oldWiseSaying = book.get(updateId);
+                File file = new File("src/main/resources/db/wiseSaying/" + updateId + ".json");
+                ObjectNode objectNode = (ObjectNode) mapper.readTree(file);
 
-                System.out.println("명언(기존) : " + oldWiseSaying.getContent());
+                System.out.println("명언(기존) : " + objectNode.get("content"));
                 System.out.print("명언 : ");
                 String newContent = scanner.next();
 
-                System.out.println("작가(기존) : " + oldWiseSaying.getAuthor());
+                System.out.println("작가(기존) : " + objectNode.get("author"));
                 System.out.print("작가 : ");
                 String newAuthor = scanner.next();
 
-                book.replace(updateId, new WiseSaying(updateId, newAuthor, newContent));
+                objectNode.put("content", newContent);
+                objectNode.put("author", newAuthor);
+
+                mapper.writeValue(file, objectNode);
             }
         }
+        PrintWriter writer = new PrintWriter("src/main/resources/db/wiseSaying/lastId.txt");
+        writer.println(id);
+        writer.flush();
+        writer.close();
+        scanner.close();
     }
 }
