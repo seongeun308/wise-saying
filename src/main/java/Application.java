@@ -1,3 +1,5 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Application {
@@ -5,6 +7,7 @@ public class Application {
         System.out.println("== 명언 앱 ==");
         Scanner scanner = new Scanner(System.in);
 
+        Map<Integer, WiseSaying> book = new HashMap<>();
         int id = 1;
         while (true) {
             System.out.print("명령) ");
@@ -15,7 +18,18 @@ public class Application {
                 String body = scanner.next();
                 System.out.print("작가 : ");
                 String writer = scanner.next();
+
+                book.put(id, new WiseSaying(id, body, writer));
                 System.out.println(id++ + "번 명언이 등록되었습니다.");
+            }
+            if (command.equals("목록")) {
+                System.out.println("번호 / 작가 / 명언");
+                System.out.println("----------------------");
+                book.values().forEach(wiseSaying ->
+                        System.out.println(wiseSaying.getId() + "/ "
+                                + wiseSaying.getWriter() + " / "
+                                + wiseSaying.getBody())
+                );
             }
         }
     }
