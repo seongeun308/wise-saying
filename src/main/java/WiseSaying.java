@@ -1,23 +1,23 @@
 public class WiseSaying {
     private final int id;
-    private final String writer;
-    private final String body;
+    private final String content;
+    private final String author;
 
-    public WiseSaying(int id, String writer, String body) {
+    public WiseSaying(int id, String author, String content) {
         this.id = id;
-        this.writer = writer;
-        this.body = body;
+        this.author = author;
+        this.content = content;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getWriter() {
-        return writer;
+    public String getAuthor() {
+        return author;
     }
 
-    public String getBody() {
-        return body;
+    public String getContent() {
+        return content;
     }
 }

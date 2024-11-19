@@ -15,11 +15,12 @@ public class Application {
             if (command.equals("종료")) break;
             if (command.equals("등록")) {
                 System.out.print("명언 : ");
-                String body = scanner.next();
+                String content = scanner.next();
                 System.out.print("작가 : ");
-                String writer = scanner.next();
+                String author = scanner.next();
 
                 book.put(id, new WiseSaying(id, body, writer));
+                book.put(id, new WiseSaying(id, content, author));
                 System.out.println(id++ + "번 명언이 등록되었습니다.");
             }
             if (command.equals("목록")) {
@@ -27,8 +28,8 @@ public class Application {
                 System.out.println("----------------------");
                 book.values().forEach(wiseSaying ->
                         System.out.println(wiseSaying.getId() + "/ "
-                                + wiseSaying.getWriter() + " / "
-                                + wiseSaying.getBody())
+                                + wiseSaying.getAuthor() + " / "
+                                + wiseSaying.getContent())
                 );
             }
             if (command.startsWith("삭제")) {
@@ -43,15 +44,15 @@ public class Application {
                 int updateId  = Integer.parseInt(command.substring(6));
                 WiseSaying oldWiseSaying = book.get(updateId);
 
-                System.out.println("명언(기존) : " + oldWiseSaying.getBody());
+                System.out.println("명언(기존) : " + oldWiseSaying.getContent());
                 System.out.print("명언 : ");
-                String newBody = scanner.next();
+                String newContent = scanner.next();
 
-                System.out.println("작가(기존) : " + oldWiseSaying.getWriter());
+                System.out.println("작가(기존) : " + oldWiseSaying.getAuthor());
                 System.out.print("작가 : ");
-                String newWriter = scanner.next();
+                String newAuthor = scanner.next();
 
-                book.replace(updateId, new WiseSaying(updateId, newWriter, newBody));
+                book.replace(updateId, new WiseSaying(updateId, newAuthor, newContent));
             }
         }
     }
