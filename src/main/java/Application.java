@@ -14,6 +14,7 @@ public class Application {
                 String body = scanner.next();
                 System.out.print("작가 : ");
                 String writer = scanner.next();
+                System.out.println("1번 명언이 등록되었습니다.");
             }
         }
     }
