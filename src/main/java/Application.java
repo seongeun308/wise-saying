@@ -31,6 +31,11 @@ public class Application {
                                 + wiseSaying.getBody())
                 );
             }
+            if (command.startsWith("삭제")) {
+                int removeId  = Integer.parseInt(command.substring(6));
+                book.remove(removeId);
+                System.out.println(removeId + "번 명언이 삭제되었습니다.");
+            }
         }
     }
 }
