@@ -5,8 +5,16 @@ public class Application {
         System.out.println("== 명언 앱 ==");
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("명령) ");
-        String command = scanner.next();
-        if (command.equals("종료")) System.exit(0);
+        while (true) {
+            System.out.print("명령) ");
+            String command = scanner.next();
+            if (command.equals("종료")) break;
+            if (command.equals("등록")) {
+                System.out.print("명언 : ");
+                String body = scanner.next();
+                System.out.print("작가 : ");
+                String writer = scanner.next();
+            }
+        }
     }
 }
