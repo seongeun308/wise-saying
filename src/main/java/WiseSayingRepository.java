@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class FileDAO {
+public class WiseSayingRepository {
 
     private final String path = "src/main/resources/db/wiseSaying/";
     private final String extension = ".json";
@@ -19,7 +19,7 @@ public class FileDAO {
     ObjectMapper mapper = new ObjectMapper();
     int id;
 
-    public FileDAO() throws FileNotFoundException {
+    public WiseSayingRepository() throws FileNotFoundException {
         mapper.enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         id = new Scanner(new File(path + "lastId.txt")).nextInt();
     }
