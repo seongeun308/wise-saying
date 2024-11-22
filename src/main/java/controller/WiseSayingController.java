@@ -6,33 +6,20 @@ import view.InputView;
 import view.OutputView;
 
 public class WiseSayingController {
-    private final InputView inputView = new InputView();
-    private final OutputView outputView = new OutputView();
     private final WiseSayingService wiseSayingService;
+    private final InputView inputView;
+    private final OutputView outputView = new OutputView();
 
-    public WiseSayingController(WiseSayingService wiseSayingService) {
+    public WiseSayingController(WiseSayingService wiseSayingService, InputView inputView) {
         this.wiseSayingService = wiseSayingService;
+        this.inputView = inputView;
     }
 
-    public void run() {
-        while (true) {
-            String command = inputView.readCommand();
-            if (command.equals("종료")) break;
-            else if (command.equals("등록")) post();
-            else if (command.equals("목록")) read();
-            else if (command.startsWith("수정")) update(command);
-            else if (command.startsWith("삭제")) delete(command);
-            else if (command.equals("빌드")) build();
-            else System.out.println("명령어를 잘못 입력했습니다.");
-        }
-        inputView.close();
-    }
-
-    private void read(){
+    public void read(){
         outputView.printList(wiseSayingService.readAll());
     }
 
-    private void build(){
+    public void build(){
         try{
             wiseSayingService.build();
             outputView.printBuild();
@@ -41,7 +28,7 @@ public class WiseSayingController {
         }
     }
 
-    private void delete(String command){
+    public void delete(String command){
         int deleteId  = Integer.parseInt(command.substring(6));
         try {
             wiseSayingService.delete(deleteId);
@@ -51,7 +38,7 @@ public class WiseSayingController {
         }
     }
 
-    private void update(String command) {
+    public void update(String command) {
         int updateId  = Integer.parseInt(command.substring(6));
         WiseSaying oldWiseSaying;
         try {
@@ -66,7 +53,7 @@ public class WiseSayingController {
         }
     }
 
-    private void post() {
+    public void post() {
         try {
             int wiseSayingId = wiseSayingService.post(inputView.readContent(), inputView.readAuthor());
             outputView.printPost(wiseSayingId);
