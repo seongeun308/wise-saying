@@ -2,6 +2,8 @@ package view;
 
 import domain.WiseSaying;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 public class OutputView {
@@ -13,7 +15,7 @@ public class OutputView {
         System.out.println("번호 / 작가 / 명언");
         System.out.println("----------------------");
 
-        wiseSayingList.forEach(wiseSaying -> System.out.println(wiseSaying.getId() + "/ "
+        wiseSayingList.forEach(wiseSaying -> System.out.println(wiseSaying.getId() + " / "
                 + wiseSaying.getAuthor() + " / "
                 + wiseSaying.getContent()));
     }
