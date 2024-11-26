@@ -1,7 +1,6 @@
+import config.AppConfig;
 import domain.FilePath;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,10 +19,24 @@ public class ApplicationTest {
         }
     }
 
+    @BeforeAll
+    static void beforeAll() {
+        // 테스트 전용 경로 설정
+        AppConfig.setTest();
+        FilePath.setTestFilePath();
+    }
+
     @AfterEach
     void afterEach() {
         File directory = new File(FilePath.DIR);
         directory.listFiles(file -> file.delete());
+    }
+
+    @AfterAll
+    static void afterAll() {
+        // 운영 전용 경로로 다시 설정
+        AppConfig.cancelTest();
+        FilePath.setOperationFilePath();
     }
 
     @Test
