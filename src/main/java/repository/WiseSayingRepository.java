@@ -1,5 +1,6 @@
 package repository;
 
+import domain.FilePath;
 import domain.WiseSaying;
 import util.JsonUtils;
 
@@ -11,40 +12,36 @@ import java.util.List;
 import java.util.Scanner;
 
 public class WiseSayingRepository {
-    private final static String PATH = "src/main/resources/db/wiseSaying/";
-    private final static String EXTENSION = ".json";
 
     public int create(String content, String author) {
         int id = getLastId();
         WiseSaying wiseSaying = new WiseSaying(id++, content, author);
-        int createdId = create(wiseSaying);
-        if (createdId == -1) return -1;
+        createByWiseSaying(wiseSaying);
         updateLastId(id);
         return wiseSaying.getId();
     }
 
-    public int create(WiseSaying wiseSaying) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + wiseSaying.getId() + EXTENSION))) {
+    private void createByWiseSaying(WiseSaying wiseSaying) {
+        String path = FilePath.WISE_SAYING.formatted(wiseSaying.getId());
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
             writer.write(JsonUtils.serialize(wiseSaying));
         } catch (IOException e) {
-            return -1;
+            throw new RuntimeException("명언 등록 실패했습니다.", e);
         }
-        return wiseSaying.getId();
     }
 
-    public WiseSaying read(int id) {
-        File file = new File(PATH + id + EXTENSION);
-        if (!file.exists())  return null;
-        return read(file);
+    public WiseSaying readById(int id) {
+        File file = checkIsExistFile(id, FilePath.WISE_SAYING.formatted(id));
+        return readByFile(file);
     }
 
-    public WiseSaying read(File file) {
+    private WiseSaying readByFile(File file) {
         WiseSaying wiseSaying;
         try (InputStream inputStream = new FileInputStream(file)) {
             byte[] fileBytes = inputStream.readAllBytes();
             wiseSaying = JsonUtils.deserialize(new String(fileBytes, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException("명언 읽기 실패했습니다.", e);
         }
         return wiseSaying;
     }
@@ -54,64 +51,61 @@ public class WiseSayingRepository {
         if (files == null)
             return new ArrayList<>();
         return Arrays.stream(files)
-                .map(this::read)
+                .map(this::readByFile)
                 .toList();
     }
 
-    public List<String> readAllJson() {
+    public void update(WiseSaying newWiseSaying) {
+        createByWiseSaying(newWiseSaying);
+    }
+
+    public void delete(int deleteId){
+        File file = checkIsExistFile(deleteId, FilePath.WISE_SAYING.formatted(deleteId));
+        if (!file.delete())
+            throw new RuntimeException("명언 삭제 실패했습니다.");
+    }
+
+    public void build() {
+        String jsonList = JsonUtils.toJsonList(readAllJson());
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FilePath.BUILD))) {
+            writer.write(jsonList);
+        } catch (IOException e) {
+            throw new RuntimeException("명언 빌드에 실패했습니다.", e);
+        }
+    }
+
+    private File checkIsExistFile(int id, String path) {
+        File file = new File(path);
+        if (!file.exists())
+            throw new RuntimeException(id + "번 명언은 존재하지 않습니다.");
+        return file;
+    }
+
+    private List<String> readAllJson() {
         return readAll().stream()
                 .map(JsonUtils::serialize)
                 .toList();
     }
 
-    public WiseSaying update(int updateId, String newContent, String newAuthor) {
-        WiseSaying oldWiseSaying = read(updateId);
-        if (oldWiseSaying == null) return null;
-        WiseSaying newWiseSaying = new WiseSaying(oldWiseSaying.getId(), newContent, newAuthor);
-        create(newWiseSaying);
-        return newWiseSaying;
-    }
-
-    public void delete(int deleteId) throws Exception {
-        File file = new File(PATH + deleteId + EXTENSION);
-        if (!file.exists())
-            throw new Exception(deleteId + "번 명언은 존재하지 않습니다.");
-        if (!file.delete())
-            throw new Exception("명언 삭제 실패");
-    }
-
-    public boolean build() {
-        String jsonList = JsonUtils.toJsonList(readAllJson());
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + "data.json"))) {
-            writer.write(jsonList);
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
-
     private int getLastId() {
-        File lastIdFile = new File(PATH + "lastId.txt");
-        if (!lastIdFile.exists()) return -1;
-        try (Scanner scanner = new Scanner(lastIdFile)) {
+        try (Scanner scanner = new Scanner(new File(FilePath.LAST_ID))) {
             return scanner.nextInt();
         } catch (FileNotFoundException e) {
-            return -1;
+            throw new RuntimeException("마지막 아이디를 찾는데 실패했습니다.");
         }
     }
 
-    private boolean updateLastId(int id){
-        try (PrintWriter writer = new PrintWriter(PATH + "lastId.txt")){
+    private void updateLastId(int id){
+        try (PrintWriter writer = new PrintWriter(FilePath.LAST_ID)){
             writer.println(id);
+            writer.flush();
         } catch (FileNotFoundException e) {
-            return false;
+            throw new RuntimeException("마지막 아이디를 저장하는데 실패했습니다.");
         }
-        return true;
     }
 
     private File[] getFiles() {
-        File directory = new File(PATH);
-        if (!directory.exists()) return null;
+        File directory = new File(FilePath.DIR);
         return directory.listFiles((dir, name) -> name.endsWith(".json") && !name.endsWith("data.json"));
     }
 }

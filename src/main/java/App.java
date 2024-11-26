@@ -1,27 +1,31 @@
-import config.BeanInitialization;
 import controller.WiseSayingController;
 import view.InputView;
 
+import java.util.Scanner;
+
 public class App {
-    private final WiseSayingController controller;
     private final InputView inputView;
+    private final WiseSayingController controller;
 
     public App() {
-        BeanInitialization beanInitialization = new BeanInitialization();
-        controller = beanInitialization.wiseSayingController();
-        inputView = beanInitialization.inputView();
+        this.inputView = new InputView(new Scanner(System.in));
+        this.controller = new WiseSayingController(inputView);
     }
 
     public void run() {
+        System.out.println("== 명언 앱 ==");
         while (true) {
             String command = inputView.readCommand();
-            if (command.equals("종료")) break;
-            else if (command.equals("등록")) controller.post();
-            else if (command.equals("목록")) controller.read();
-            else if (command.matches("수정\\?id=\\d+")) controller.update(command);
-            else if (command.matches("삭제\\?id=\\d+")) controller.delete(command);
-            else if (command.equals("빌드")) controller.build();
-            else System.out.println("명령어를 잘못 입력했습니다.");
+            try {
+                if (command.equals("종료")) break;
+                if (command.equals("등록")) controller.post();
+                if (command.equals("목록")) controller.read();
+                if (command.matches("수정\\?id=\\d+")) controller.update(command);
+                if (command.matches("삭제\\?id=\\d+")) controller.delete(command);
+                if (command.equals("빌드")) controller.build();
+            } catch (RuntimeException e) {
+                System.out.println(e.getMessage());
+            }
         }
         inputView.close();
     }
