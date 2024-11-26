@@ -2,8 +2,6 @@ package view;
 
 import domain.WiseSaying;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.List;
 
 public class OutputView {
@@ -18,6 +16,14 @@ public class OutputView {
         wiseSayingList.forEach(wiseSaying -> System.out.println(wiseSaying.getId() + " / "
                 + wiseSaying.getAuthor() + " / "
                 + wiseSaying.getContent()));
+    }
+
+    public void printPage(int page) {
+        System.out.println("----------------------");
+        if (page % 2 != 0)
+            System.out.printf("페이지 : [%d] / %d%n", page, page + 1);
+        else
+            System.out.printf("페이지 : %d / [%d]%n", page - 1, page);
     }
 
     public void printDelete(int id) {

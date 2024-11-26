@@ -3,6 +3,8 @@ package service;
 import domain.WiseSaying;
 import repository.WiseSayingRepository;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class WiseSayingService {
@@ -16,8 +18,18 @@ public class WiseSayingService {
         return wiseSayingRepository.findById(id);
     }
 
-    public List<WiseSaying> readAll(){
-        return wiseSayingRepository.findAll();
+    public List<WiseSaying> readByPaging(int page, int count){
+        List<WiseSaying> all = new ArrayList<>(wiseSayingRepository.findAll());
+        all.sort(Comparator.comparingInt(WiseSaying::getId).reversed());
+        int startId = (page - 1) * 5;
+        return all.stream()
+                .skip(startId)
+                .limit(count)
+                .toList();
+    }
+
+    public List<WiseSaying> readByPaging(int page){
+        return readByPaging(page, 5);
     }
 
     public void build() {

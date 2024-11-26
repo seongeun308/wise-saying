@@ -25,6 +25,7 @@ public class WiseSayingRepository {
         String path = FilePath.WISE_SAYING.formatted(wiseSaying.getId());
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
             writer.write(JsonUtils.serialize(wiseSaying));
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException("명언 등록 실패했습니다.", e);
         }
