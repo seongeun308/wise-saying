@@ -1,10 +1,6 @@
-import config.AppConfig;
-import domain.FilePath;
-
 import java.io.ByteArrayOutputStream;
 
 public class AppTest {
-
     public static String run(String input) {
         System.setIn(TestUtil.genScanner(input + "종료"));
         ByteArrayOutputStream out = TestUtil.setOutToByteArray();
