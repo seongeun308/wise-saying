@@ -5,6 +5,7 @@ import service.WiseSayingService;
 import view.InputView;
 import view.OutputView;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +52,15 @@ public class WiseSayingController {
         Matcher matcher = Pattern.compile("\\d+").matcher(command);
         if (matcher.find())
             return Integer.parseInt(matcher.group());
-        throw new RuntimeException("명령어에 Id값이 포함되어 있지 않습니다.");
+        throw new RuntimeException("명령어에 id 값이 포함되어 있지 않습니다.");
+    }
+
+    public void search(String command) {
+        String[] words = command.split("[/?=&]");
+        String keywordType = words[2];
+        String keyword = words[4];
+        List<WiseSaying> searched = wiseSayingService.searchForKeyword(keywordType, keyword);
+        outputView.printSearch(keywordType, keyword);
+        outputView.printList(searched);
     }
 }

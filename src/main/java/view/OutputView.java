@@ -35,4 +35,11 @@ public class OutputView {
     public void printBuild() {
         System.out.println("data.json 파일의 내용이 갱신되었습니다.");
     }
+
+    public void printSearch(String keywordType, String keyword) {
+        System.out.println("----------------------");
+        System.out.println("검색타입 : " + keywordType);
+        System.out.println("검색어 : " + keyword);
+        System.out.println("----------------------");
+    }
 }

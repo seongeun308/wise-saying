@@ -30,12 +30,12 @@ public class WiseSayingRepository {
         }
     }
 
-    public WiseSaying readById(int id) {
+    public WiseSaying findById(int id) {
         File file = checkIsExistFile(id, FilePath.WISE_SAYING.formatted(id));
-        return readByFile(file);
+        return findByFile(file);
     }
 
-    private WiseSaying readByFile(File file) {
+    private WiseSaying findByFile(File file) {
         WiseSaying wiseSaying;
         try (InputStream inputStream = new FileInputStream(file)) {
             byte[] fileBytes = inputStream.readAllBytes();
@@ -46,12 +46,26 @@ public class WiseSayingRepository {
         return wiseSaying;
     }
 
-    public List<WiseSaying> readAll() {
+    public List<WiseSaying> findByAuthor (String keyword) {
+        List<WiseSaying> all = findAll();
+        return all.stream()
+                .filter(wiseSaying -> wiseSaying.getAuthor().contains(keyword))
+                .toList();
+    }
+
+    public List<WiseSaying> findByContent (String keyword) {
+        List<WiseSaying> all = findAll();
+        return all.stream()
+                .filter(wiseSaying -> wiseSaying.getContent().contains(keyword))
+                .toList();
+    }
+
+    public List<WiseSaying> findAll() {
         File[] files = getFiles();
         if (files == null)
             return new ArrayList<>();
         return Arrays.stream(files)
-                .map(this::readByFile)
+                .map(this::findByFile)
                 .toList();
     }
 
@@ -66,7 +80,7 @@ public class WiseSayingRepository {
     }
 
     public void build() {
-        String jsonList = JsonUtils.toJsonList(readAllJson());
+        String jsonList = JsonUtils.toJsonList(findAllForJson());
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FilePath.BUILD))) {
             writer.write(jsonList);
         } catch (IOException e) {
@@ -81,8 +95,8 @@ public class WiseSayingRepository {
         return file;
     }
 
-    private List<String> readAllJson() {
-        return readAll().stream()
+    private List<String> findAllForJson() {
+        return findAll().stream()
                 .map(JsonUtils::serialize)
                 .toList();
     }

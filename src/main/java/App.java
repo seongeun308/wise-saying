@@ -22,6 +22,7 @@ public class App {
                 if (command.equals("목록")) controller.read();
                 if (command.matches("수정\\?id=\\d+")) controller.update(command);
                 if (command.matches("삭제\\?id=\\d+")) controller.delete(command);
+                if (command.matches("목록\\?keywordType=[a-zA-Z]+&keyword=\\p{L}+")) controller.search(command);
                 if (command.equals("빌드")) controller.build();
             } catch (RuntimeException e) {
                 System.out.println(e.getMessage());
